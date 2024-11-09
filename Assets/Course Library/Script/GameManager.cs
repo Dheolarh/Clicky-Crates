@@ -9,9 +9,11 @@ public class GameManager : MonoBehaviour
     public List<GameObject> objects;
     public GameObject bombExplosion;
     public GameObject coinExplosion;
+    public GameObject startScreen;
     public TextMeshProUGUI score;
     public TextMeshProUGUI gameEndScore;
     public TextMeshProUGUI timer;
+    private float spawnRate = 2;
     public int currentScore;
     public int currentTime = 30;
     public GameObject gameOver;
@@ -20,11 +22,15 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+    }
+
+    public void StartGame(float difficulty)
+    {
+        spawnRate /= difficulty;
         currentScore = 0;
-        if (!_gameOver)
-        {
-            StartCoroutine("spawnManager");
-        }
+        startScreen.SetActive(false);
+        StartCoroutine("spawnManager");
         InvokeRepeating("CountDownTimer", 1, 1);
     }
 
@@ -50,9 +56,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator spawnManager()
     {
-            while (true)
+            while (!_gameOver)
             {
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(spawnRate);
                 int index = Random.Range(0, objects.Count);
                 Instantiate(objects[index]);
             }
@@ -62,6 +68,10 @@ public class GameManager : MonoBehaviour
     {
         _gameOver = true;
         gameOver.SetActive(true);
+        if (currentScore <= 0)
+        {
+            currentScore = 0;
+        }
         gameEndScore.text = $"Score: {currentScore:D3}";
     }
 
@@ -69,4 +79,5 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+    
 }
