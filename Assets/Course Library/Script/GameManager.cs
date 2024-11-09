@@ -10,7 +10,10 @@ public class GameManager : MonoBehaviour
     public GameObject bombExplosion;
     public GameObject coinExplosion;
     public TextMeshProUGUI score;
+    public TextMeshProUGUI gameEndScore;
+    public TextMeshProUGUI timer;
     public int currentScore;
+    public int currentTime = 30;
     public GameObject gameOver;
     public bool _gameOver;
     public bool gameStarted;
@@ -22,12 +25,27 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine("spawnManager");
         }
+        InvokeRepeating("CountDownTimer", 1, 1);
     }
 
     // Update is called once per frame
     void Update()
     {
         score.text = $"Score: {currentScore}".ToString();
+    }
+
+    void CountDownTimer()
+    {
+        if (currentTime > 0)
+        {
+            currentTime--;
+            timer.text = $"00:{currentTime:D2}";
+        }
+        else
+        {
+            GameOver();
+            CancelInvoke("CountDownTimer");
+        }
     }
 
     IEnumerator spawnManager()
@@ -44,6 +62,7 @@ public class GameManager : MonoBehaviour
     {
         _gameOver = true;
         gameOver.SetActive(true);
+        gameEndScore.text = $"Score: {currentScore:D3}";
     }
 
     public void PlayAgain()
